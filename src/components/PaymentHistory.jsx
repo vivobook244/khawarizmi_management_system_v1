@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { useToast } from './Toast';
-import { Field, TextInput, Select, TextArea } from './FormFields';
+import { Field, TextInput, Select } from './FormFields';
 import { formatRupiah, formatDateShort, toRupiahInput, parseRupiahInput } from '../lib/format';
 import { Plus, Trash2 } from 'lucide-react';
 
