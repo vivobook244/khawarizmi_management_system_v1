@@ -281,7 +281,14 @@ function ProposalForm({ open, onClose, editing, onSaved }) {
     if (!validate()) return;
     setSaving(true);
     try {
-      const payload = { ...form, price: Number(form.price) || 0 };
+      const validItems = items.filter((it) => it.name && it.name.trim());
+      const itemsTotal = validItems.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+      const payload = {
+        ...form,
+        business_scheme: form.proposal_type === 'software_development' && form.business_scheme
+          ? form.business_scheme : null,
+        price: validItems.length ? itemsTotal : Number(form.price) || 0,
+      };
       let proposalId = editing?.id;
       if (editing) {
         const { error } = await supabase.from('proposals').update(payload).eq('id', editing.id);
@@ -293,7 +300,6 @@ function ProposalForm({ open, onClose, editing, onSaved }) {
         if (error) throw error;
         proposalId = data.id;
       }
-      const validItems = items.filter((it) => it.name && it.name.trim());
       if (validItems.length) {
         const rows = validItems.map((it) => ({
           proposal_id: proposalId, name: it.name, description: it.description || null, price: Number(it.price) || 0,
