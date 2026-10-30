@@ -12,8 +12,8 @@ import { Plus, ArrowDownLeft, ArrowUpRight, Wallet, Trash2, Pencil, Receipt } fr
 
 const PAGE_SIZE = 10;
 const CATEGORIES = {
-  income: ['Pendapatan Service', 'Penjualan Sparepart', 'Project Software', 'Pembayaran Piutang', 'Pendapatan Lainnya'],
-  expense: ['Pembelian Sparepart', 'Operasional', 'Transportasi', 'Peralatan', 'Internet & Utilitas', 'Pemasaran', 'Biaya Lainnya'],
+  income: ['Suntikan Modal', 'Pendapatan Lainnya'],
+  expense: ['Pembayaran Hutang', 'Operasional', 'Transportasi', 'Peralatan', 'Internet & Utilitas', 'Pemasaran', 'Biaya Lainnya'],
 };
 const EMPTY_FORM = {
   transaction_type: 'income', category: 'Pendapatan Service', description: '',
@@ -76,7 +76,7 @@ export default function FinancePage() {
       transaction_type: form.transaction_type, category: form.category,
       description: form.description.trim() || null, amount: Number(form.amount),
       transaction_date: form.transaction_date, payment_method: form.payment_method,
-      reference_type: form.reference_type || 'manual', reference_id: form.reference_id || null,
+      reference_type: 'manual', reference_id: null,
     };
     const result = editing
       ? await supabase.from('financial_transactions').update(payload).eq('id', editing.id)
@@ -104,8 +104,8 @@ export default function FinancePage() {
     <div>
       <div className="page-header flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div><h1 className="text-2xl sm:text-[28px] font-bold tracking-tight text-slate-900 dark:text-white">Keuangan</h1>
-          <p className="text-sm text-slate-500 mt-1">Catat uang yang benar-benar diterima dan dikeluarkan bisnis.</p></div>
-        <button onClick={openCreate} className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-white bg-brand-600 hover:bg-brand-700"><Plus size={16}/> Catat Transaksi</button>
+          <p className="text-sm text-slate-500 mt-1">Arus kas dari aktivitas bisnis otomatis; input manual hanya untuk aktivitas di luar operasional.</p></div>
+        <button onClick={openCreate} className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-white bg-brand-600 hover:bg-brand-700"><Plus size={16}/> Catat Transaksi Manual</button>
       </div>
 
       <div className="app-panel p-4 sm:p-5 mb-4">
@@ -131,7 +131,7 @@ export default function FinancePage() {
           </Select>
         </div>
         {loading ? <LoadingState/> : error ? <ErrorState message={error} onRetry={load}/> : paged.length === 0
-          ? <EmptyState icon={Receipt} title="Belum ada transaksi" message="Catat pemasukan atau pengeluaran pertama bisnis."/>
+          ? <EmptyState icon={Receipt} title="Belum ada transaksi" message="Transaksi operasional akan muncul otomatis. Catat di sini hanya modal, biaya lain, atau aktivitas non-operasional."/>
           : <>
             <div className="hidden md:block overflow-x-auto"><table className="w-full text-sm">
               <thead className="bg-slate-50/80 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400"><tr>
@@ -160,8 +160,8 @@ export default function FinancePage() {
           <Field label="Jumlah (Rp)" required><TextInput value={toRupiahInput(form.amount)} onChange={(e) => set('amount', parseRupiahInput(e.target.value))} inputMode="numeric" placeholder="0"/></Field>
           <Field label="Tanggal" required><TextInput type="date" value={form.transaction_date} onChange={(e) => set('transaction_date', e.target.value)}/></Field>
           <Field label="Metode Pembayaran"><Select value={form.payment_method} onChange={(e) => set('payment_method', e.target.value)}><option>Transfer</option><option>Tunai</option><option>QRIS</option><option>E-Wallet</option><option>Lainnya</option></Select></Field>
-          <Field label="Sumber Transaksi"><Select value={form.reference_type} onChange={(e) => set('reference_type', e.target.value)}><option value="manual">Manual</option><option value="service">Service</option><option value="software_project">Project Software</option><option value="sparepart">Sparepart</option><option value="other">Lainnya</option></Select></Field>
-          <div className="sm:col-span-2"><Field label="Keterangan"><TextArea value={form.description} onChange={(e) => set('description', e.target.value)} placeholder="Contoh: pembayaran DP service laptop customer"/></Field></div>
+          <Field label="Sumber Transaksi"><Select value="manual" disabled><option value="manual">Manual / Non-operasional</option></Select></Field>
+          <div className="sm:col-span-2"><Field label="Keterangan"><TextArea value={form.description} onChange={(e) => set('description', e.target.value)} placeholder="Contoh: suntikan modal, biaya listrik, pembayaran hutang lain"/></Field></div>
         </form>
       </Modal>}
       <ConfirmDialog open={!!deleting} onClose={() => setDeleting(null)} onConfirm={remove} loading={saving} message={`Hapus transaksi "${deleting?.category}" sebesar ${formatRupiah(deleting?.amount)}?`}/>
