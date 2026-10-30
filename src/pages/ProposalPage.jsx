@@ -72,9 +72,14 @@ export default function ProposalPage() {
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
 
   const openView = async (p) => {
-    setViewing(p);
-    const { data } = await supabase.from('proposal_items').select('*').eq('proposal_id', p.id).order('created_at');
-    setViewItems(data || []);
+    try {
+      const { data, error } = await supabase.from('proposal_items').select('*').eq('proposal_id', p.id).order('created_at');
+      if (error) throw error;
+      setViewItems(data || []);
+      setViewing(p);
+    } catch (err) {
+      toast.error('Gagal memuat detail proposal: ' + err.message);
+    }
   };
 
   const handleDelete = async () => {
@@ -94,11 +99,12 @@ export default function ProposalPage() {
 
   const handlePdf = async (p) => {
     try {
-      const { data } = await supabase.from('proposal_items').select('*').eq('proposal_id', p.id);
+      const { data, error } = await supabase.from('proposal_items').select('*').eq('proposal_id', p.id).order('created_at');
+      if (error) throw error;
       downloadProposalPdf(p, data || []);
       toast.success('Proposal PDF diunduh');
     } catch (err) {
-      toast.error('Gagal export PDF');
+      toast.error('Gagal export PDF: ' + err.message);
     }
   };
 
