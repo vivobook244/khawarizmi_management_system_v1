@@ -19,24 +19,28 @@ export default function DashboardPage() {
     setLoading(true);
     setError(null);
     try {
-      const [services, projects, spareparts, invoices] = await Promise.all([
+      const [services, projects, spareparts, invoices, finance] = await Promise.all([
         supabase.from('services').select('id, work_status, payment_status, estimated_total, service_fee'),
         supabase.from('software_projects').select('id, work_status, payment_status, estimated_total'),
         supabase.from('spareparts').select('id, stock, low_stock_threshold, selling_price'),
         supabase.from('invoices').select('total_amount, amount_paid, payment_status'),
+        supabase.from('financial_transactions').select('transaction_type, amount'),
       ]);
 
       if (services.error) throw services.error;
       if (projects.error) throw projects.error;
       if (spareparts.error) throw spareparts.error;
       if (invoices.error) throw invoices.error;
+      if (finance.error) throw finance.error;
 
       const activeService = ['Menunggu pemeriksaan', 'Sedang diperiksa', 'Menunggu sparepart', 'Sedang dikerjakan'];
       const activeProject = ['Proposal', 'Menunggu persetujuan', 'Planning', 'Development', 'Testing', 'Revisi'];
 
-      const totalTransactions =
+      const totalContractValue =
         (services.data || []).reduce((a, s) => a + (Number(s.estimated_total) || 0), 0) +
         (projects.data || []).reduce((a, p) => a + (Number(p.estimated_total) || 0), 0);
+      const cashIncome = (finance.data || []).filter((t) => t.transaction_type === 'income').reduce((a, t) => a + Number(t.amount || 0), 0);
+      const cashExpense = (finance.data || []).filter((t) => t.transaction_type === 'expense').reduce((a, t) => a + Number(t.amount || 0), 0);
 
       const unpaidInvoices = (invoices.data || []).filter((i) => i.payment_status !== 'Lunas');
       const unpaidAmount = unpaidInvoices.reduce((a, i) => a + (Number(i.total_amount) - Number(i.amount_paid || 0)), 0);
@@ -51,7 +55,10 @@ export default function DashboardPage() {
         projectActive: projects.data.filter((p) => activeProject.includes(p.work_status)).length,
         unpaidCount: unpaidInvoices.length,
         unpaidAmount,
-        totalTransactions,
+        totalContractValue,
+        cashIncome,
+        cashExpense,
+        netCash: cashIncome - cashExpense,
         sparepartCount: spareparts.data.length,
         lowStockCount: lowStock.length,
       });
