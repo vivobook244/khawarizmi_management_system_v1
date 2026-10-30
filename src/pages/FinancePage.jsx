@@ -8,7 +8,7 @@ import Pagination from '../components/Pagination';
 import { LoadingState, EmptyState, ErrorState } from '../components/States';
 import { Field, TextInput, TextArea, Select } from '../components/FormFields';
 import { formatRupiah, formatDateShort, toRupiahInput, parseRupiahInput } from '../lib/format';
-import { Plus, ArrowDownLeft, ArrowUpRight, Wallet, TrendingUp, Trash2, Pencil, Receipt } from 'lucide-react';
+import { Plus, ArrowDownLeft, ArrowUpRight, Wallet, Trash2, Pencil, Receipt } from 'lucide-react';
 
 const PAGE_SIZE = 10;
 const CATEGORIES = {
