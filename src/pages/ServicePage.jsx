@@ -91,12 +91,16 @@ export default function ServicePage() {
   const openEdit = (s) => { setEditing(s); setFormOpen(true); };
 
   const openView = async (s) => {
-    setViewing(s);
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('service_spareparts')
       .select('*')
       .eq('service_id', s.id);
+    if (error) {
+      toast.error('Gagal memuat detail sparepart: ' + error.message);
+      return;
+    }
     setViewSpareparts(data || []);
+    setViewing(s);
   };
 
   const handleDelete = async () => {
@@ -558,7 +562,7 @@ function ServiceForm({ open, onClose, editing, spareparts, onSaved }) {
 // ---------- Service View ----------
 function ServiceViewModal({ service, spareparts, onClose, onPrint, onDownload, canEdit }) {
   const sparepartsTotal = spareparts.reduce((a, s) => a + (Number(s.subtotal) || 0), 0);
-  const total = (Number(service.service_fee) || 0) + sparepartsTotal;
+  const total = Number(service.estimated_total) || (Number(service.service_fee) || 0) + sparepartsTotal;
 
   const Row = ({ label, value }) => (
     <div className="flex gap-2 py-1.5 text-sm">
