@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/Toast';
 import Modal from '../components/Modal';
+import PaymentHistory from '../components/PaymentHistory';
 import ConfirmDialog from '../components/ConfirmDialog';
 import SearchInput from '../components/SearchInput';
 import Pagination from '../components/Pagination';
@@ -286,6 +287,7 @@ export default function ServicePage() {
           onClose={() => setViewing(null)}
           onPrint={() => printInvoice(viewing)}
           onDownload={() => handleInvoice(viewing)}
+          canEdit={canEdit}
         />
       )}
 
@@ -560,7 +562,7 @@ function ServiceForm({ open, onClose, editing, spareparts, onSaved }) {
 }
 
 // ---------- Service View ----------
-function ServiceViewModal({ service, spareparts, onClose, onPrint, onDownload }) {
+function ServiceViewModal({ service, spareparts, onClose, onPrint, onDownload, canEdit }) {
   const sparepartsTotal = spareparts.reduce((a, s) => a + (Number(s.subtotal) || 0), 0);
   const total = (Number(service.service_fee) || 0) + sparepartsTotal;
 
@@ -628,6 +630,7 @@ function ServiceViewModal({ service, spareparts, onClose, onPrint, onDownload })
         <div className="flex justify-between text-sm"><span className="text-slate-500">Biaya Jasa</span><span className="font-medium">{formatRupiah(service.service_fee)}</span></div>
         <div className="flex justify-between text-base font-bold text-slate-900 dark:text-white pt-1"><span>Total</span><span>{formatRupiah(total)}</span></div>
       </div>
+      <PaymentHistory sourceType="service" sourceId={service.id} customerName={service.customer_name} totalAmount={total} canEdit={canEdit} />
     </Modal>
   );
 }
