@@ -10,27 +10,79 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color-scheme: light;
 }
 
 html, body, #root {
-  height: 100%;
+  min-height: 100%;
   margin: 0;
 }
 
 body {
-  background-color: #f1f5f9;
+  background-color: #f6f8fc;
   color: #0f172a;
 }
 
 .dark body {
-  background-color: #0b1120;
+  background-color: #020617;
   color: #e2e8f0;
+}
+
+button, input, select, textarea {
+  font: inherit;
+}
+
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+.app-panel {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.035);
+}
+
+.dark .app-panel {
+  background: #0f172a;
+  border-color: #1e293b;
+  box-shadow: none;
+}
+
+.page-header {
+  min-width: 0;
+}
+
+.page-header > div:first-child {
+  min-width: 0;
+}
+
+.page-header button {
+  white-space: nowrap;
+}
+
+@media (max-width: 639px) {
+  .page-header > div:last-child {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .page-header > div:last-child button {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  .app-panel {
+    border-radius: 0.875rem;
+  }
 }
 
 /* scrollbar */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
 .dark ::-webkit-scrollbar-thumb { background: #334155; }
 
 @media print {
