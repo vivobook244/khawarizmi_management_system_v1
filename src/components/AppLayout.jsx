@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, Wrench, Code2, Cpu, FileText,
+  LayoutDashboard, Wrench, Code2, Cpu, FileText, Wallet,
   LogOut, Menu, X, Moon, Sun, User,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -14,6 +14,7 @@ const navItems = [
   { to: '/software', label: 'Software Development', icon: Code2 },
   { to: '/sparepart', label: 'Sparepart', icon: Cpu },
   { to: '/proposal', label: 'Proposal Penawaran', icon: FileText },
+  { to: '/finance', label: 'Keuangan', icon: Wallet },
 ];
 
 const mobileNav = [
@@ -22,6 +23,7 @@ const mobileNav = [
   { to: '/software', label: 'Software', icon: Code2 },
   { to: '/sparepart', label: 'Part', icon: Cpu },
   { to: '/proposal', label: 'Proposal', icon: FileText },
+  { to: '/finance', label: 'Keuangan', icon: Wallet },
 ];
 
 export default function AppLayout({ children }) {
