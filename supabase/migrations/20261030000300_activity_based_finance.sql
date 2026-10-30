@@ -99,29 +99,37 @@ CREATE TRIGGER trg_supplier_payment_finance
 
 -- Inventory is increased once when a purchase is posted. The current app's
 -- spareparts.stock column remains the operational stock source.
-CREATE OR REPLACE FUNCTION public.apply_supplier_purchase_stock()
+CREATE OR REPLACE FUNCTION public.apply_supplier_purchase_item_stock()
 RETURNS trigger
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
-AS $$
+AS $
+DECLARE
+  v_status text;
 BEGIN
-  IF TG_OP = 'INSERT' AND NEW.status = 'posted' THEN
-    UPDATE spareparts sp
-      SET stock = sp.stock + item.quantity,
-          purchase_price = item.unit_cost
-      FROM supplier_purchase_items item
-      WHERE item.purchase_id = NEW.id AND sp.id = item.sparepart_id;
+  SELECT status INTO v_status FROM supplier_purchases WHERE id = NEW.purchase_id;
+  IF v_status = 'posted' THEN
+    UPDATE spareparts
+      SET stock = stock + NEW.quantity,
+          purchase_price = NEW.unit_cost
+      WHERE id = NEW.sparepart_id;
+    UPDATE supplier_purchases
+      SET total_amount = (
+        SELECT COALESCE(SUM(subtotal), 0)
+        FROM supplier_purchase_items WHERE purchase_id = NEW.purchase_id
+      ), updated_at = now()
+      WHERE id = NEW.purchase_id;
   END IF;
   RETURN NEW;
 END;
-$$;
+$;
 
-DROP TRIGGER IF EXISTS trg_supplier_purchase_stock ON supplier_purchases;
-CREATE TRIGGER trg_supplier_purchase_stock
-  AFTER INSERT ON supplier_purchases
-  FOR EACH ROW EXECUTE FUNCTION public.apply_supplier_purchase_stock();
+DROP TRIGGER IF EXISTS trg_supplier_purchase_item_stock ON supplier_purchase_items;
+CREATE TRIGGER trg_supplier_purchase_item_stock
+  AFTER INSERT ON supplier_purchase_items
+  FOR EACH ROW EXECUTE FUNCTION public.apply_supplier_purchase_item_stock();
 
--- Note: create the purchase header and its items in one transaction/RPC in the
--- application integration phase. This trigger is intentionally not a substitute
--- for atomic multi-step procurement writes.
+-- Application integration must create header/items atomically (RPC or transaction).
+-- This foundational migration records supplier cash movements and stock receipt;
+-- editing/deleting posted items needs a controlled reversal workflow before UI exposure.
