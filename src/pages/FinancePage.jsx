@@ -28,6 +28,8 @@ export default function FinancePage() {
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
+  const [dateFrom, setDateFrom] = useState(`${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-01`);
+  const [dateTo, setDateTo] = useState(new Date().toISOString().slice(0, 10));
   const [page, setPage] = useState(1);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState(null);
@@ -46,14 +48,17 @@ export default function FinancePage() {
   };
   useEffect(() => { load(); }, []);
 
-  const filtered = useMemo(() => rows.filter((row) => {
+  const periodRows = useMemo(() => rows.filter((row) =>
+    (!dateFrom || row.transaction_date >= dateFrom) && (!dateTo || row.transaction_date <= dateTo)
+  ), [rows, dateFrom, dateTo]);
+  const filtered = useMemo(() => periodRows.filter((row) => {
     const q = search.trim().toLowerCase();
     return (!q || [row.category, row.description, row.payment_method].some((v) => v?.toLowerCase().includes(q)))
       && (!typeFilter || row.transaction_type === typeFilter);
-  }), [rows, search, typeFilter]);
+  }), [periodRows, search, typeFilter]);
   const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-  const income = rows.filter((r) => r.transaction_type === 'income').reduce((sum, r) => sum + Number(r.amount || 0), 0);
-  const expense = rows.filter((r) => r.transaction_type === 'expense').reduce((sum, r) => sum + Number(r.amount || 0), 0);
+  const income = periodRows.filter((r) => r.transaction_type === 'income').reduce((sum, r) => sum + Number(r.amount || 0), 0);
+  const expense = periodRows.filter((r) => r.transaction_type === 'expense').reduce((sum, r) => sum + Number(r.amount || 0), 0);
   const openCreate = () => { setEditing(null); setForm(EMPTY_FORM); setFormOpen(true); };
   const openEdit = (row) => { setEditing(row); setForm({ ...EMPTY_FORM, ...row, reference_id: row.reference_id || '' }); setFormOpen(true); };
   const set = (key, value) => setForm((current) => ({ ...current, [key]: value }));
@@ -93,6 +98,15 @@ export default function FinancePage() {
         <div><h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Keuangan</h1>
           <p className="text-sm text-slate-500 mt-1">Catat uang yang benar-benar diterima dan dikeluarkan bisnis.</p></div>
         <button onClick={openCreate} className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-white bg-brand-600 hover:bg-brand-700"><Plus size={16}/> Catat Transaksi</button>
+      </div>
+
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 mb-4">
+        <div className="grid sm:grid-cols-[1fr_1fr_auto] gap-3 items-end">
+          <Field label="Dari tanggal"><TextInput type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(1); }} /></Field>
+          <Field label="Sampai tanggal"><TextInput type="date" value={dateTo} min={dateFrom || undefined} onChange={(e) => { setDateTo(e.target.value); setPage(1); }} /></Field>
+          <button type="button" onClick={() => { setDateFrom(''); setDateTo(''); setPage(1); }} className="px-3 py-2 rounded-lg text-sm text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800">Semua Periode</button>
+        </div>
+        <p className="text-xs text-slate-500 mt-1">Ringkasan dihitung dari transaksi pada periode ini, bukan nilai proposal atau nilai kontrak.</p>
       </div>
 
       <div className="grid sm:grid-cols-3 gap-3 mb-5">
