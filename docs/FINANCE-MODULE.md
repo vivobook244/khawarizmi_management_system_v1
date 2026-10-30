@@ -37,7 +37,7 @@ Khawarizmi is an internal operational and cash-flow tracker for a small service 
 6. Add receivables/payables and overdue aging after the payment workflow is reliable.
 
 ## Migration
-Apply migrations in order: `20261030000100_financial_transactions.sql`, then `20261030000200_business_payment_history.sql`. The second migration requires the first.
+Apply migrations in order: `20261030000100_financial_transactions.sql`, then `20261030000200_business_payment_history.sql`. The second migration requires the first. Existing legacy payment statuses are preserved, but historical DP/installments are not backfilled automatically; enter verified historical payments manually in each source record if they should appear in cash flow.
 
 ## Audit notes for the current development branch
 - The current finance screen is a cash ledger: entries must represent money actually received or paid.
