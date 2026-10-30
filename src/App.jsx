@@ -9,6 +9,7 @@ import ServicePage from './pages/ServicePage';
 import SoftwarePage from './pages/SoftwarePage';
 import SparepartPage from './pages/SparepartPage';
 import ProposalPage from './pages/ProposalPage';
+import FinancePage from './pages/FinancePage';
 import { LoadingState } from './components/States';
 
 function ProtectedRoute({ children }) {
