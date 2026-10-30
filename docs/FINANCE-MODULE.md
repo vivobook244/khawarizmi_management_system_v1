@@ -46,3 +46,39 @@ Apply migrations in order: `20261030000100_financial_transactions.sql`, then `20
 - Manually entered transactions can still be duplicated if the same real-world payment is also entered by hand. Use Service/Project payment history for those sources; use manual entries for unrelated income/expenses.
 - Existing `invoices` remain separate and are not yet allocated to individual payment records; the current workflow uses service/project values as the payment ceiling.
 - This module does not yet calculate accounting profit, COGS, inventory value, tax, or receivables aging.
+
+
+## Activity-based finance direction (implementation in progress)
+
+The intended source of truth is operational activity, not manually keyed ledger rows:
+
+- Service/project customer receipts originate from `business_payments`.
+- Sparepart retail sales and service replacement must be sourced from their operational records.
+- Supplier procurement is recorded as a stock-receipt event in `supplier_purchases` and `supplier_purchase_items`.
+- Cash movement for procurement originates only from `supplier_payments`. A credit purchase increases supplier payable and inventory, but does not create cash expense until payment.
+- Supplier payments are linked to exactly one finance cash-out row through `supplier_payment_id`.
+- Manual finance entries remain available for unrelated capital injections, non-procurement expenses, and other external activities.
+
+### Procurement data model foundation
+
+Migration `20261030000300_activity_based_finance.sql` introduces supplier purchase headers/items and supplier payment records. The item receipt trigger increases sparepart stock and recalculates the purchase total. Supplier payment insert creates one linked cash-out entry.
+
+**This migration is a schema foundation, not the complete workflow yet.** The purchase form must write header and items atomically (prefer an RPC), and editing/voiding purchases needs a stock/payable reversal process before those actions are exposed. The supplier payable balance is purchase total minus linked payments; avoid adding a second manual expense for the same payment.
+
+### Inventory and profit rules
+
+- Procurement adds inventory; it is not immediately HPP.
+- Service replacement / retail sale reduces stock and recognizes HPP using a cost snapshot.
+- A replacement part does not cause a second cash expense at the time of use.
+- Customer payments represent cash received, while service/part revenue should be recognized from the completed/posted business activity according to the chosen reporting policy.
+- Cash flow and profit/loss are separate reports. Net cash movement must not be labelled as net profit.
+
+### Remaining integration work
+
+1. Atomic procurement RPC and UI (cash/credit terms, supplier, items, unit cost, payments).
+2. Supplier payable list, partial settlement, outstanding balance, and payment history.
+3. Inventory movement ledger covering purchase receipt, retail sale, service usage, and controlled adjustments.
+4. Sparepart sales workflow and service replacement cost snapshots; ensure each operation updates stock exactly once.
+5. Finance UI source badges and read-only source transactions, while keeping manual non-operational entry.
+6. Reporting for cash flow, revenue, HPP, gross profit, operating expense, and payable balances.
+7. Apply migrations and validate in Supabase, then run frontend build and end-to-end scenarios.
