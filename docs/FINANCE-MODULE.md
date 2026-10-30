@@ -13,7 +13,8 @@ Khawarizmi is an internal operational and cash-flow tracker for a small service 
 ## Finance MVP in this branch
 - Record actual cash received (income) and actual cash paid (expense).
 - Categorize transactions and record date, payment method and optional source type.
-- See cumulative income, expenses and net cash movement.
+- See income, expenses and net cash movement for a selected date range (defaults to the current month).
+- Dashboard distinguishes estimated work/contract value from actual cash received and paid.
 - Edit/delete manually recorded entries.
 - Optional reference type is metadata only in this MVP; it does not automatically create transactions or validate the referenced record.
 
@@ -28,9 +29,16 @@ Khawarizmi is an internal operational and cash-flow tracker for a small service 
 1. Add payment allocations to services/projects/invoices so each DP/installment/payment can be tied to its source and duplicate entries prevented.
 2. Add purchase records and stock movement history (purchase, service usage, adjustment, damaged/lost).
 3. Calculate COGS from sparepart purchase cost snapshots and service usage; distinguish gross profit from cash flow.
-4. Add monthly period filters, opening cash balance, cash/bank accounts and cash reconciliation.
+4. Add opening cash balance, cash/bank accounts and cash reconciliation. Date-range filtering is included in the current development branch.
 5. Add simple monthly income statement: revenue, direct costs, operating expenses, gross profit and net operating result.
 6. Add receivables/payables and overdue aging after the payment workflow is reliable.
 
 ## Migration
 Apply supabase/migrations/20261030000100_financial_transactions.sql to the Supabase project before using the Keuangan page.
+
+## Audit notes for the current development branch
+- The current finance screen is a cash ledger: entries must represent money actually received or paid.
+- The dashboard's contract/work estimate must never be presented as cash income.
+- Current finance summaries are calculated from the selected date range; transaction search and type filters only affect the list, not the period summary.
+- Manual entries can still be duplicated or incorrectly linked because reference fields are descriptive metadata. Payment-to-invoice allocation and duplicate prevention are not implemented yet.
+- This module does not yet calculate accounting profit, COGS, inventory value, tax, or receivables aging.
