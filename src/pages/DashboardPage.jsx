@@ -5,7 +5,7 @@ import { formatRupiah } from '../lib/format';
 import { LoadingState, ErrorState } from '../components/States';
 import {
   Wrench, Code2, Cpu, Clock, CheckCircle2, AlertCircle,
-  DollarSign, Package, TrendingUp, ArrowRight, FileText,
+  DollarSign, Package, TrendingUp, ArrowRight, FileText, Wallet,
 } from 'lucide-react';
 
 const card = 'bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm';
