@@ -49,9 +49,6 @@ BEGIN
       NEW.source_type, NEW.source_id, NEW.id
     );
     RETURN NEW;
-  ELSIF TG_OP = 'DELETE' THEN
-    DELETE FROM financial_transactions WHERE payment_id = OLD.id;
-    RETURN OLD;
   END IF;
   RETURN NULL;
 END;
@@ -59,7 +56,7 @@ $$;
 
 DROP TRIGGER IF EXISTS trg_business_payment_cash_ledger ON business_payments;
 CREATE TRIGGER trg_business_payment_cash_ledger
-  AFTER INSERT OR DELETE ON business_payments
+  AFTER INSERT ON business_payments
   FOR EACH ROW EXECUTE FUNCTION public.sync_business_payment_to_cash_ledger();
 
 CREATE OR REPLACE FUNCTION public.sync_business_payment_status()
