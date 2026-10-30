@@ -60,7 +60,10 @@ export default function FinancePage() {
   const income = periodRows.filter((r) => r.transaction_type === 'income').reduce((sum, r) => sum + Number(r.amount || 0), 0);
   const expense = periodRows.filter((r) => r.transaction_type === 'expense').reduce((sum, r) => sum + Number(r.amount || 0), 0);
   const openCreate = () => { setEditing(null); setForm(EMPTY_FORM); setFormOpen(true); };
-  const openEdit = (row) => { setEditing(row); setForm({ ...EMPTY_FORM, ...row, reference_id: row.reference_id || '' }); setFormOpen(true); };
+  const openEdit = (row) => {
+    if (row.payment_id) { toast.error('Pembayaran dari Service/Project harus dikelola melalui riwayat pembayaran sumbernya.'); return; }
+    setEditing(row); setForm({ ...EMPTY_FORM, ...row, reference_id: row.reference_id || '' }); setFormOpen(true);
+  };
   const set = (key, value) => setForm((current) => ({ ...current, [key]: value }));
 
   const save = async (event) => {
@@ -85,6 +88,11 @@ export default function FinancePage() {
   };
 
   const remove = async () => {
+    if (deleting?.payment_id) {
+      toast.error('Hapus pembayaran melalui riwayat pembayaran pada Service/Project terkait.');
+      setDeleting(null);
+      return;
+    }
     setSaving(true);
     const { error: removeError } = await supabase.from('financial_transactions').delete().eq('id', deleting.id);
     setSaving(false);
@@ -132,13 +140,13 @@ export default function FinancePage() {
                 <td className="px-4 py-3 text-slate-500">{formatDateShort(row.transaction_date)}</td>
                 <td className="px-4 py-3"><span className={row.transaction_type === 'income' ? 'text-emerald-600' : 'text-rose-600'}>{row.transaction_type === 'income' ? 'Pemasukan' : 'Pengeluaran'}</span></td>
                 <td className="px-4 py-3"><div className="font-medium text-slate-800 dark:text-slate-200">{row.category}</div><div className="text-xs text-slate-500">{row.description || '-'}</div></td>
-                <td className="px-4 py-3 text-slate-500">{row.payment_method}</td>
+                <td className="px-4 py-3 text-slate-500">{row.payment_method}{row.payment_id && <span className="block text-[10px] text-emerald-600">Otomatis dari pembayaran</span>}</td>
                 <td className={'px-4 py-3 text-right font-semibold '+(row.transaction_type === 'income' ? 'text-emerald-600' : 'text-rose-600')}>{row.transaction_type === 'income' ? '+' : '-'}{formatRupiah(row.amount)}</td>
-                <td className="px-4 py-3"><div className="flex justify-center gap-1"><IconButton title="Edit" onClick={() => openEdit(row)}><Pencil size={15}/></IconButton><IconButton title="Hapus" onClick={() => setDeleting(row)}><Trash2 size={15}/></IconButton></div></td>
+                <td className="px-4 py-3"><div className="flex justify-center gap-1">{row.payment_id ? <span className="text-[11px] text-slate-400">Dikelola dari sumber</span> : <><IconButton title="Edit" onClick={() => openEdit(row)}><Pencil size={15}/></IconButton><IconButton title="Hapus" onClick={() => setDeleting(row)}><Trash2 size={15}/></IconButton></>}</div></td>
               </tr>)}</tbody></table></div>
             <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800">{paged.map((row) => <div key={row.id} className="p-4 flex justify-between gap-3">
               <div><p className="font-medium text-slate-800 dark:text-slate-200">{row.category}</p><p className="text-xs text-slate-500">{formatDateShort(row.transaction_date)} · {row.payment_method}</p><p className="text-xs text-slate-500 mt-1">{row.description || '-'}</p></div>
-              <div className="text-right shrink-0"><p className={'font-semibold '+(row.transaction_type === 'income' ? 'text-emerald-600' : 'text-rose-600')}>{row.transaction_type === 'income' ? '+' : '-'}{formatRupiah(row.amount)}</p><div className="flex justify-end mt-2"><IconButton title="Edit" onClick={() => openEdit(row)}><Pencil size={15}/></IconButton><IconButton title="Hapus" onClick={() => setDeleting(row)}><Trash2 size={15}/></IconButton></div></div>
+              <div className="text-right shrink-0"><p className={'font-semibold '+(row.transaction_type === 'income' ? 'text-emerald-600' : 'text-rose-600')}>{row.transaction_type === 'income' ? '+' : '-'}{formatRupiah(row.amount)}</p><div className="flex justify-end mt-2">{row.payment_id ? <span className="text-[10px] text-slate-400">Otomatis</span> : <><IconButton title="Edit" onClick={() => openEdit(row)}><Pencil size={15}/></IconButton><IconButton title="Hapus" onClick={() => setDeleting(row)}><Trash2 size={15}/></IconButton></>}</div></div>
             </div>)}</div>
             <div className="p-4 border-t border-slate-200 dark:border-slate-800"><p className="text-xs text-slate-500 mb-2">Menampilkan {paged.length} dari {filtered.length} transaksi</p><Pagination page={page} totalPages={Math.ceil(filtered.length / PAGE_SIZE)} onChange={setPage}/></div>
           </>}
