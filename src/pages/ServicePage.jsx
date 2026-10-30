@@ -149,9 +149,9 @@ export default function ServicePage() {
 
   return (
     <div>
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+      <div className="page-header flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Service</h1>
+          <h1 className="text-2xl sm:text-[28px] font-bold tracking-tight text-slate-900 dark:text-white">Service</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Kelola pekerjaan service laptop/komputer</p>
         </div>
         <div className="flex gap-2">
@@ -172,8 +172,8 @@ export default function ServicePage() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row gap-2">
+      <div className="app-panel">
+        <div className="px-4 py-4 sm:px-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row gap-3">
           <div className="flex-1">
             <SearchInput value={search} onChange={(v) => { setSearch(v); setPage(1); }} placeholder="Cari customer, perangkat, no invoice..." />
           </div>
@@ -204,7 +204,7 @@ export default function ServicePage() {
             {/* Desktop table */}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400">
+                <thead className="bg-slate-50/80 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400">
                   <tr>
                     <th className="text-left px-4 py-3 font-medium cursor-pointer" onClick={() => toggleSort('invoice_number')}>Invoice</th>
                     <th className="text-left px-4 py-3 font-medium cursor-pointer" onClick={() => toggleSort('customer_name')}>Customer</th>
