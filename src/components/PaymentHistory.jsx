@@ -134,7 +134,7 @@ export default function PaymentHistory({ sourceType, sourceId, customerName, tot
       )}
 
       {loading ? <p className="text-xs text-slate-400 py-2">Memuat pembayaran...</p> : payments.length === 0 ? (
-        <p className="text-xs text-slate-400 py-2">Belum ada pembayaran. Status pembayaran tidak dianggap lunas sebelum transaksi dicatat di sini.</p>
+        <p className="text-xs text-slate-400 py-2">Belum ada riwayat pembayaran. Jika pembayaran terjadi sebelum fitur ini tersedia, catat ulang agar kas dan sisa tagihan ikut tercatat.</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
