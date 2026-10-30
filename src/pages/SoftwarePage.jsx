@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/Toast';
 import Modal from '../components/Modal';
+import PaymentHistory from '../components/PaymentHistory';
 import ConfirmDialog from '../components/ConfirmDialog';
 import SearchInput from '../components/SearchInput';
 import Pagination from '../components/Pagination';
@@ -250,7 +251,7 @@ export default function SoftwarePage() {
       )}
 
       {viewing && (
-        <ProjectViewModal project={viewing} rab={viewRab} rabItems={viewRabItems} onClose={() => setViewing(null)} onInvoice={() => handleInvoice(viewing)} />
+        <ProjectViewModal project={viewing} rab={viewRab} rabItems={viewRabItems} onClose={() => setViewing(null)} onInvoice={() => handleInvoice(viewing)} canEdit={canEdit} />
       )}
 
       {rabModal && (
@@ -403,7 +404,7 @@ function ProjectForm({ open, onClose, editing, onSaved }) {
 }
 
 // ---------- Project View ----------
-function ProjectViewModal({ project, rab, rabItems, onClose, onInvoice }) {
+function ProjectViewModal({ project, rab, rabItems, onClose, onInvoice, canEdit }) {
   const Row = ({ label, value }) => (
     <div className="flex gap-2 py-1.5 text-sm">
       <span className="w-32 shrink-0 text-slate-500">{label}</span>
@@ -462,6 +463,7 @@ function ProjectViewModal({ project, rab, rabItems, onClose, onInvoice }) {
           <span>Nilai Project</span><span>{formatRupiah(project.estimated_total)}</span>
         </div>
       </div>
+      <PaymentHistory sourceType="software_project" sourceId={project.id} customerName={project.customer_name} totalAmount={project.estimated_total} canEdit={canEdit} />
     </Modal>
   );
 }
