@@ -123,6 +123,11 @@ BEGIN
     WHERE source_type = CASE WHEN TG_TABLE_NAME = 'services' THEN 'service' ELSE 'software_project' END
       AND source_id = NEW.id;
 
+  -- Preserve legacy payment statuses until the user records the first real payment.
+  IF v_count = 0 THEN
+    RETURN NEW;
+  END IF;
+
   IF TG_TABLE_NAME = 'services' THEN
     v_status := CASE WHEN v_paid <= 0 THEN 'Belum bayar'
                      WHEN NEW.estimated_total > 0 AND v_paid >= NEW.estimated_total THEN 'Lunas'
