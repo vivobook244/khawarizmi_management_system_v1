@@ -10,6 +10,7 @@ import SoftwarePage from './pages/SoftwarePage';
 import SparepartPage from './pages/SparepartPage';
 import ProposalPage from './pages/ProposalPage';
 import FinancePage from './pages/FinancePage';
+import ProcurementPage from './pages/ProcurementPage';
 import { LoadingState } from './components/States';
 
 function ProtectedRoute({ children }) {
@@ -40,6 +41,7 @@ export default function App() {
               <Route path="/sparepart" element={<ProtectedRoute><SparepartPage /></ProtectedRoute>} />
               <Route path="/proposal" element={<ProtectedRoute><ProposalPage /></ProtectedRoute>} />
               <Route path="/finance" element={<ProtectedRoute><FinancePage /></ProtectedRoute>} />
+              <Route path="/procurement" element={<ProtectedRoute><ProcurementPage /></ProtectedRoute>} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </BrowserRouter>
