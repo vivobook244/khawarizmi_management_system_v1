@@ -11,7 +11,7 @@ import StatusBadge, { workStatusColor, paymentStatusColor } from '../components/
 import { LoadingState, EmptyState, ErrorState } from '../components/States';
 import { Field, TextInput, TextArea, Select } from '../components/FormFields';
 import {
-  SOFTWARE_TYPES, WORK_STATUS_PROJECT, PAYMENT_STATUS_PROJECT, generateInvoiceNumber,
+  SOFTWARE_TYPES, WORK_STATUS_PROJECT, generateInvoiceNumber,
 } from '../lib/constants';
 import { formatRupiah, formatDateShort, toRupiahInput, parseRupiahInput } from '../lib/format';
 import { exportProjectsExcel, downloadProjectInvoice, downloadRabPdf } from '../lib/exporters';
@@ -278,7 +278,7 @@ function ProjectForm({ open, onClose, editing, onSaved }) {
   const toast = useToast();
   const [form, setForm] = useState({
     customer_name: '', title: '', software_type: 'Website', purpose: '',
-    work_status: 'Proposal', payment_status: 'Belum bayar', rab_total: 0,
+    work_status: 'Proposal', rab_total: 0,
     estimated_duration: '', estimated_total: 0, notes: '',
     project_date: new Date().toISOString().slice(0, 10),
   });
@@ -293,7 +293,6 @@ function ProjectForm({ open, onClose, editing, onSaved }) {
         software_type: editing.software_type || 'Website',
         purpose: editing.purpose || '',
         work_status: editing.work_status || 'Proposal',
-        payment_status: editing.payment_status || 'Belum bayar',
         rab_total: Number(editing.rab_total) || 0,
         estimated_duration: editing.estimated_duration || '',
         estimated_total: Number(editing.estimated_total) || 0,
@@ -303,7 +302,7 @@ function ProjectForm({ open, onClose, editing, onSaved }) {
     } else {
       setForm({
         customer_name: '', title: '', software_type: 'Website', purpose: '',
-        work_status: 'Proposal', payment_status: 'Belum bayar', rab_total: 0,
+        work_status: 'Proposal', rab_total: 0,
         estimated_duration: '', estimated_total: 0, notes: '',
         project_date: new Date().toISOString().slice(0, 10),
       });
