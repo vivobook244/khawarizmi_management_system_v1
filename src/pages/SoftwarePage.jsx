@@ -373,11 +373,6 @@ function ProjectForm({ open, onClose, editing, onSaved }) {
               {WORK_STATUS_PROJECT.map((s) => <option key={s} value={s}>{s}</option>)}
             </Select>
           </Field>
-          <Field label="Status Pembayaran">
-            <Select value={form.payment_status} onChange={(e) => set('payment_status', e.target.value)}>
-              {PAYMENT_STATUS_PROJECT.map((s) => <option key={s} value={s}>{s}</option>)}
-            </Select>
-          </Field>
           <Field label="Estimasi Durasi">
             <TextInput value={form.estimated_duration} onChange={(e) => set('estimated_duration', e.target.value)} placeholder="Contoh: 30 hari" />
           </Field>
