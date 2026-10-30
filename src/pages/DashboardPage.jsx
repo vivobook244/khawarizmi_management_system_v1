@@ -73,8 +73,8 @@ export default function DashboardPage() {
     { label: 'Service Selesai', value: stats.serviceDone, icon: CheckCircle2, color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-400', to: '/service' },
     { label: 'Total Project Software', value: stats.totalProject, icon: Code2, color: 'text-purple-600 bg-purple-50 dark:bg-purple-950/60 dark:text-purple-400', to: '/software' },
     { label: 'Project Berjalan', value: stats.projectActive, icon: TrendingUp, color: 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 dark:text-indigo-400', to: '/software' },
-    { label: 'Pembayaran Belum Lunas', value: stats.unpaidCount, sub: formatRupiah(stats.unpaidAmount), icon: AlertCircle, color: 'text-red-600 bg-red-50 dark:bg-red-950/60 dark:text-red-400', to: '/service' },
-    { label: 'Total Nilai Transaksi', value: formatRupiah(stats.totalTransactions), icon: DollarSign, color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-400' },
+    { label: 'Invoice Belum Lunas', value: stats.unpaidCount, sub: formatRupiah(stats.unpaidAmount), icon: AlertCircle, color: 'text-red-600 bg-red-50 dark:bg-red-950/60 dark:text-red-400', to: '/service' },
+    { label: 'Nilai Estimasi Pekerjaan', value: formatRupiah(stats.totalTransactions), icon: DollarSign, color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-400' },
     { label: 'Sparepart Tersedia', value: stats.sparepartCount, sub: stats.lowStockCount > 0 ? `${stats.lowStockCount} stok rendah` : 'Stok aman', icon: Package, color: 'text-teal-600 bg-teal-50 dark:bg-teal-950/60 dark:text-teal-400', to: '/sparepart' },
   ];
 
