@@ -323,7 +323,7 @@ function ServiceForm({ open, onClose, editing, spareparts, onSaved }) {
   const toast = useToast();
   const [form, setForm] = useState({
     customer_name: '', device: '', problem: '', work_status: 'Menunggu pemeriksaan',
-    payment_status: 'Belum bayar', service_fee: 0, estimated_duration: '',
+    service_fee: 0, estimated_duration: '',
     estimated_total: 0, actions: '', notes: '', service_date: new Date().toISOString().slice(0, 10),
   });
   const [items, setItems] = useState([]);
@@ -337,7 +337,6 @@ function ServiceForm({ open, onClose, editing, spareparts, onSaved }) {
         device: editing.device || '',
         problem: editing.problem || '',
         work_status: editing.work_status || 'Menunggu pemeriksaan',
-        payment_status: editing.payment_status || 'Belum bayar',
         service_fee: Number(editing.service_fee) || 0,
         estimated_duration: editing.estimated_duration || '',
         estimated_total: Number(editing.estimated_total) || 0,
@@ -352,7 +351,7 @@ function ServiceForm({ open, onClose, editing, spareparts, onSaved }) {
     } else {
       setForm({
         customer_name: '', device: '', problem: '', work_status: 'Menunggu pemeriksaan',
-        payment_status: 'Belum bayar', service_fee: 0, estimated_duration: '',
+        service_fee: 0, estimated_duration: '',
         estimated_total: 0, actions: '', notes: '', service_date: new Date().toISOString().slice(0, 10),
       });
       setItems([]);
