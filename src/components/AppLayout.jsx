@@ -1,6 +1,6 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, Wrench, Code2, Cpu, FileText, Wallet,
+  LayoutDashboard, Wrench, Code2, Cpu, FileText, Wallet, Package,
   LogOut, Menu, X, Moon, Sun, User, ChevronRight,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -15,6 +15,7 @@ const navItems = [
   { to: '/sparepart', label: 'Sparepart', icon: Cpu, group: 'Operasional' },
   { to: '/proposal', label: 'Proposal Penawaran', icon: FileText, group: 'Bisnis' },
   { to: '/finance', label: 'Keuangan', icon: Wallet, group: 'Bisnis' },
+  { to: '/procurement', label: 'Pengadaan Sparepart', icon: Package, group: 'Bisnis' },
 ];
 
 export default function AppLayout({ children }) {
