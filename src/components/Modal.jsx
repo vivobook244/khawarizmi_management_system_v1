@@ -11,7 +11,7 @@ const sizes = {
 export default function Modal({ open, onClose, title, children, size = 'md', footer }) {
   useEffect(() => {
     if (!open) return;
-    const onKey = (e) => e.key === 'Escape' && onClose();
+    const onKey = (event) => { if (event.key === 'Escape') onClose(); };
     document.addEventListener('keydown', onKey);
     document.body.style.overflow = 'hidden';
     return () => {
@@ -23,30 +23,16 @@ export default function Modal({ open, onClose, title, children, size = 'md', foo
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 no-print">
-      <div
-        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-[fadeIn_0.15s_ease-out]"
-        onClick={onClose}
-      />
-      <div
-        className={`relative w-full ${sizes[size]} bg-white dark:bg-slate-900 rounded-t-2xl sm:rounded-2xl shadow-2xl max-h-[92vh] flex flex-col animate-[slideUp_0.2s_ease-out]`}
-      >
-        <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-slate-200 dark:border-slate-800 shrink-0">
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{title}</h3>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
-          >
-            <X size={20} />
-          </button>
-        </div>
-        <div className="flex-1 overflow-y-auto px-5 py-4">{children}</div>
-        {footer && (
-          <div className="px-5 py-4 border-t border-slate-200 dark:border-slate-800 shrink-0">
-            {footer}
-          </div>
-        )}
-      </div>
+    <div className="no-print fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4" role="presentation">
+      <button type="button" aria-label="Tutup dialog" className="absolute inset-0 bg-slate-950/45 backdrop-blur-[2px]" onClick={onClose} />
+      <section role="dialog" aria-modal="true" aria-label={title} className={`relative flex max-h-[94dvh] w-full flex-col overflow-hidden rounded-t-2xl bg-white shadow-2xl dark:bg-slate-900 sm:max-h-[90vh] sm:rounded-2xl ${sizes[size] || sizes.md}`}>
+        <header className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-100 px-5 py-4 dark:border-slate-800 sm:px-6">
+          <h3 className="min-w-0 text-base font-bold text-slate-900 dark:text-white sm:text-lg">{title}</h3>
+          <button type="button" aria-label="Tutup dialog" onClick={onClose} className="shrink-0 rounded-xl p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 dark:hover:bg-slate-800 dark:hover:text-white"><X size={18} /></button>
+        </header>
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 sm:px-6">{children}</div>
+        {footer && <footer className="shrink-0 border-t border-slate-100 bg-slate-50/70 px-5 py-3.5 dark:border-slate-800 dark:bg-slate-900 sm:px-6">{footer}</footer>}
+      </section>
     </div>
   );
 }
