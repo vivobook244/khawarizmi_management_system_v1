@@ -102,13 +102,13 @@ export default function FinancePage() {
 
   return (
     <div>
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
-        <div><h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Keuangan</h1>
+      <div className="page-header flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+        <div><h1 className="text-2xl sm:text-[28px] font-bold tracking-tight text-slate-900 dark:text-white">Keuangan</h1>
           <p className="text-sm text-slate-500 mt-1">Catat uang yang benar-benar diterima dan dikeluarkan bisnis.</p></div>
         <button onClick={openCreate} className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-white bg-brand-600 hover:bg-brand-700"><Plus size={16}/> Catat Transaksi</button>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 mb-4">
+      <div className="app-panel p-4 sm:p-5 mb-4">
         <div className="grid sm:grid-cols-[1fr_1fr_auto] gap-3 items-end">
           <Field label="Dari tanggal"><TextInput type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(1); }} /></Field>
           <Field label="Sampai tanggal"><TextInput type="date" value={dateTo} min={dateFrom || undefined} onChange={(e) => { setDateTo(e.target.value); setPage(1); }} /></Field>
@@ -123,8 +123,8 @@ export default function FinancePage() {
         <SummaryCard label="Arus Kas Bersih" amount={income - expense} icon={Wallet} />
       </div>
 
-      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row gap-2">
+      <div className="app-panel">
+        <div className="px-4 py-4 sm:px-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row gap-3">
           <div className="flex-1"><SearchInput value={search} onChange={(v) => { setSearch(v); setPage(1); }} placeholder="Cari kategori, keterangan, metode..." /></div>
           <Select value={typeFilter} onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }} className="!w-auto">
             <option value="">Semua Jenis Transaksi</option><option value="income">Pemasukan</option><option value="expense">Pengeluaran</option>
@@ -134,7 +134,7 @@ export default function FinancePage() {
           ? <EmptyState icon={Receipt} title="Belum ada transaksi" message="Catat pemasukan atau pengeluaran pertama bisnis."/>
           : <>
             <div className="hidden md:block overflow-x-auto"><table className="w-full text-sm">
-              <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400"><tr>
+              <thead className="bg-slate-50/80 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400"><tr>
                 <th className="text-left px-4 py-3">Tanggal</th><th className="text-left px-4 py-3">Jenis</th><th className="text-left px-4 py-3">Kategori / Keterangan</th><th className="text-left px-4 py-3">Metode</th><th className="text-right px-4 py-3">Jumlah</th><th className="text-center px-4 py-3">Aksi</th>
               </tr></thead><tbody className="divide-y divide-slate-100 dark:divide-slate-800">{paged.map((row) => <tr key={row.id}>
                 <td className="px-4 py-3 text-slate-500">{formatDateShort(row.transaction_date)}</td>
@@ -170,7 +170,7 @@ export default function FinancePage() {
 }
 
 function SummaryCard({ label, amount, icon: Icon }) {
-  return <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4"><div className="flex items-center justify-between"><p className="text-sm text-slate-500">{label}</p><Icon size={18} className="text-slate-400"/></div><p className="text-xl font-bold text-slate-900 dark:text-white mt-2">{formatRupiah(amount)}</p></div>;
+  return <div className="app-panel p-4 sm:p-5"><div className="flex items-center justify-between"><p className="text-sm text-slate-500">{label}</p><Icon size={18} className="text-slate-400"/></div><p className="text-xl font-bold text-slate-900 dark:text-white mt-2">{formatRupiah(amount)}</p></div>;
 }
 function IconButton({ children, onClick, title }) {
   return <button type="button" title={title} onClick={onClick} className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">{children}</button>;
