@@ -106,3 +106,76 @@ DROP TRIGGER IF EXISTS trg_business_payment_status ON business_payments;
 CREATE TRIGGER trg_business_payment_status
   AFTER INSERT OR DELETE ON business_payments
   FOR EACH ROW EXECUTE FUNCTION public.sync_business_payment_status();
+
+
+-- Recalculate the derived payment status whenever the agreed job value changes.
+CREATE OR REPLACE FUNCTION public.recalculate_business_payment_status()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_paid numeric(14,2);
+  v_count integer;
+  v_status text;
+BEGIN
+  SELECT COALESCE(SUM(amount), 0), COUNT(*)
+    INTO v_paid, v_count
+    FROM business_payments
+    WHERE source_type = CASE WHEN TG_TABLE_NAME = 'services' THEN 'service' ELSE 'software_project' END
+      AND source_id = NEW.id;
+
+  IF TG_TABLE_NAME = 'services' THEN
+    v_status := CASE WHEN v_paid <= 0 THEN 'Belum bayar'
+                     WHEN NEW.estimated_total > 0 AND v_paid >= NEW.estimated_total THEN 'Lunas'
+                     ELSE 'DP' END;
+  ELSE
+    v_status := CASE WHEN v_paid <= 0 THEN 'Belum bayar'
+                     WHEN NEW.estimated_total > 0 AND v_paid >= NEW.estimated_total THEN 'Lunas'
+                     WHEN v_count <= 1 THEN 'DP'
+                     ELSE 'Cicilan' END;
+  END IF;
+
+  UPDATE public.services SET payment_status = v_status
+    WHERE TG_TABLE_NAME = 'services' AND id = NEW.id;
+  UPDATE public.software_projects SET payment_status = v_status
+    WHERE TG_TABLE_NAME = 'software_projects' AND id = NEW.id;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_service_payment_status_total ON services;
+CREATE TRIGGER trg_service_payment_status_total
+  AFTER UPDATE OF estimated_total ON services
+  FOR EACH ROW EXECUTE FUNCTION public.recalculate_business_payment_status();
+
+DROP TRIGGER IF EXISTS trg_project_payment_status_total ON software_projects;
+CREATE TRIGGER trg_project_payment_status_total
+  AFTER UPDATE OF estimated_total ON software_projects
+  FOR EACH ROW EXECUTE FUNCTION public.recalculate_business_payment_status();
+
+-- Remove linked payment and ledger rows when a service/project is deleted.
+CREATE OR REPLACE FUNCTION public.delete_source_business_payments()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  DELETE FROM business_payments
+    WHERE source_type = CASE WHEN TG_TABLE_NAME = 'services' THEN 'service' ELSE 'software_project' END
+      AND source_id = OLD.id;
+  RETURN OLD;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_service_delete_business_payments ON services;
+CREATE TRIGGER trg_service_delete_business_payments
+  BEFORE DELETE ON services
+  FOR EACH ROW EXECUTE FUNCTION public.delete_source_business_payments();
+
+DROP TRIGGER IF EXISTS trg_project_delete_business_payments ON software_projects;
+CREATE TRIGGER trg_project_delete_business_payments
+  BEFORE DELETE ON software_projects
+  FOR EACH ROW EXECUTE FUNCTION public.delete_source_business_payments();
