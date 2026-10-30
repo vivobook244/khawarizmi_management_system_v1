@@ -39,6 +39,7 @@ export default function App() {
               <Route path="/software" element={<ProtectedRoute><SoftwarePage /></ProtectedRoute>} />
               <Route path="/sparepart" element={<ProtectedRoute><SparepartPage /></ProtectedRoute>} />
               <Route path="/proposal" element={<ProtectedRoute><ProposalPage /></ProtectedRoute>} />
+              <Route path="/finance" element={<ProtectedRoute><FinancePage /></ProtectedRoute>} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </BrowserRouter>
