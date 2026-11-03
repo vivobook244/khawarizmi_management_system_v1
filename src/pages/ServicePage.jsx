@@ -122,8 +122,12 @@ export default function ServicePage() {
 
   const handleInvoice = async (s) => {
     try {
-      const { data } = await supabase.from('service_spareparts').select('*').eq('service_id', s.id);
-      downloadServiceInvoice(s, data || []);
+      const [{ data: parts }, { data: payments }] = await Promise.all([
+        supabase.from('service_spareparts').select('*').eq('service_id', s.id),
+        supabase.from('business_payments').select('*').eq('source_type', 'service').eq('source_id', s.id)
+          .order('payment_date', { ascending: false }).order('created_at', { ascending: false }),
+      ]);
+      downloadServiceInvoice(s, parts || [], payments || []);
       toast.success('Invoice PDF diunduh');
     } catch (err) {
       toast.error('Gagal membuat invoice');
@@ -132,8 +136,12 @@ export default function ServicePage() {
 
   const printInvoice = async (s) => {
     try {
-      const { data } = await supabase.from('service_spareparts').select('*').eq('service_id', s.id);
-      const doc = exportInvoiceService(s, data || []);
+      const [{ data: parts }, { data: payments }] = await Promise.all([
+        supabase.from('service_spareparts').select('*').eq('service_id', s.id),
+        supabase.from('business_payments').select('*').eq('source_type', 'service').eq('source_id', s.id)
+          .order('payment_date', { ascending: false }).order('created_at', { ascending: false }),
+      ]);
+      const doc = exportInvoiceService(s, parts || [], payments || []);
       doc.autoPrint();
       const url = doc.output('bloburl');
       window.open(url, '_blank');
