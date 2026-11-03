@@ -229,7 +229,7 @@ export default function ServicePage() {
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-center gap-1">
                           <IconBtn title="Lihat" onClick={() => openView(s)}><Eye size={16} /></IconBtn>
-                          <IconBtn title="Invoice" onClick={() => handleInvoice(s)}><FileText size={16} /></IconBtn>
+                          <IconBtn title={s.payment_status === "Lunas" ? "Kuitansi" : "Invoice"} onClick={() => handleInvoice(s)}><FileText size={16} /></IconBtn>
                           {canEdit && <IconBtn title="Edit" onClick={() => openEdit(s)}><Pencil size={16} /></IconBtn>}
                           {canEdit && <IconBtn title="Hapus" onClick={() => setDeleting(s)} danger><Trash2 size={16} /></IconBtn>}
                         </div>
@@ -257,7 +257,7 @@ export default function ServicePage() {
                   </div>
                   <div className="flex gap-1">
                     <IconBtn title="Lihat" onClick={() => openView(s)}><Eye size={16} /></IconBtn>
-                    <IconBtn title="Invoice" onClick={() => handleInvoice(s)}><FileText size={16} /></IconBtn>
+                    <IconBtn title={s.payment_status === "Lunas" ? "Kuitansi" : "Invoice"} onClick={() => handleInvoice(s)}><FileText size={16} /></IconBtn>
                     <IconBtn title="Cetak" onClick={() => printInvoice(s)}><Printer size={16} /></IconBtn>
                     {canEdit && <IconBtn title="Edit" onClick={() => openEdit(s)}><Pencil size={16} /></IconBtn>}
                     {canEdit && <IconBtn title="Hapus" onClick={() => setDeleting(s)} danger><Trash2 size={16} /></IconBtn>}
