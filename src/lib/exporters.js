@@ -42,7 +42,7 @@ const terbilang = (value) => {
     if (num < 1000000000000) return `${say(Math.floor(num / 1000000000))} miliar ${say(num % 1000000000)}`.trim();
     return `${say(Math.floor(num / 1000000000000))} triliun ${say(num % 1000000000000)}`.trim();
   };
-  return n === 0 ? 'Nol rupiah' : `${say(n).replace(/\\s+/g, ' ').trim()} rupiah`;
+  return n === 0 ? 'Nol rupiah' : `${say(n).replace(/\s+/g, ' ').trim()} rupiah`;
 };
 
 const drawDocumentHeader = (doc, title, number) => {
