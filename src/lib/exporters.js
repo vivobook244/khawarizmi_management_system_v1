@@ -57,7 +57,7 @@ const drawDocumentHeader = (doc, title, number) => {
   doc.setFontSize(8);
   doc.setTextColor(100, 116, 139);
   doc.text('IT Service  |  Software Development  |  IoT Development', 14, 32);
-  doc.text('Dumai, Riau', 14, 38);
+  doc.text('Dumai, Riau  |  +62 822 5152 4351', 14, 38);
   doc.setTextColor(...blue);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(19);
