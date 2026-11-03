@@ -27,9 +27,11 @@ const headerBox = (doc, title, subtitle) => {
   doc.setTextColor(30, 30, 30);
 };
 
-export const exportInvoiceService = (service, spareparts) => {
+export const exportInvoiceService = (service, spareparts = []) => {
   const doc = new jsPDF();
-  headerBox(doc, 'INVOICE SERVICE', `No: ${service.invoice_number || '-'}`);
+  const isPaid = String(service.payment_status || '').toLowerCase() === 'lunas';
+  const documentTitle = isPaid ? 'KUITANSI PEMBAYARAN SERVICE' : 'INVOICE SERVICE';
+  headerBox(doc, documentTitle, `No: ${service.invoice_number || '-'}`);
 
   let y = 56;
   doc.setFontSize(10);
@@ -39,23 +41,33 @@ export const exportInvoiceService = (service, spareparts) => {
   doc.text(service.customer_name || '-', 14, y); y += 5;
   if (service.customer_phone) { doc.text(service.customer_phone, 14, y); y += 5; }
   y += 2;
-  doc.text(`Tanggal: ${formatDate(service.service_date)}`, 14, y); y += 5;
-  doc.text(`Perangkat: ${service.device}`, 14, y); y += 8;
+  doc.text(`Tanggal Service: ${formatDate(service.service_date)}`, 14, y); y += 5;
+  doc.text(`Perangkat: ${service.device || '-'}`, 14, y); y += 5;
+  if (service.problem) {
+    doc.text('Keluhan:', 14, y); y += 5;
+    const problemLines = doc.splitTextToSize(String(service.problem), 180);
+    doc.text(problemLines, 14, y); y += problemLines.length * 5;
+  }
+  if (service.actions) {
+    doc.setFont('helvetica', 'bold');
+    doc.text('Tindakan / Riwayat Penggantian:', 14, y); y += 5;
+    doc.setFont('helvetica', 'normal');
+    const actionLines = doc.splitTextToSize(String(service.actions), 180);
+    doc.text(actionLines, 14, y); y += actionLines.length * 5 + 2;
+  }
 
   const rows = [];
-  if (spareparts && spareparts.length) {
-    spareparts.forEach((s, i) => {
-      rows.push([
-        i + 1,
-        s.sparepart_name,
-        s.quantity,
-        formatRupiah(s.price),
-        formatRupiah(s.subtotal),
-      ]);
-    });
-  }
+  spareparts.forEach((part, index) => {
+    rows.push([
+      index + 1,
+      part.sparepart_name || 'Sparepart',
+      Number(part.quantity) || 0,
+      formatRupiah(part.price),
+      formatRupiah(Number(part.subtotal) || (Number(part.quantity) || 0) * (Number(part.price) || 0)),
+    ]);
+  });
   rows.push([
-    spareparts && spareparts.length ? spareparts.length + 1 : 1,
+    rows.length + 1,
     'Biaya Jasa Service',
     1,
     formatRupiah(service.service_fee),
@@ -64,7 +76,7 @@ export const exportInvoiceService = (service, spareparts) => {
 
   autoTable(doc, {
     startY: y,
-    head: [['#', 'Deskripsi', 'Qty', 'Harga', 'Subtotal']],
+    head: [['#', 'Deskripsi / Sparepart Diganti', 'Qty', 'Harga', 'Subtotal']],
     body: rows,
     theme: 'grid',
     headStyles: { fillColor: [28, 107, 245], textColor: 255, fontSize: 9 },
@@ -73,20 +85,29 @@ export const exportInvoiceService = (service, spareparts) => {
   });
 
   let afterY = doc.lastAutoTable.finalY + 8;
-  const total = (service.service_fee || 0) + (spareparts || []).reduce((a, s) => a + (Number(s.subtotal) || 0), 0);
+  const total = (Number(service.service_fee) || 0) + spareparts.reduce((sum, part) =>
+    sum + (Number(part.subtotal) || (Number(part.quantity) || 0) * (Number(part.price) || 0)), 0);
+  const payments = Number(service.amount_paid) || 0;
+  const remaining = Math.max(0, total - payments);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
   doc.text(`Total: ${formatRupiah(total)}`, 130, afterY);
   afterY += 6;
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
-  doc.text(`Status Pembayaran: ${service.payment_status}`, 130, afterY);
-  afterY += 14;
+  doc.text(`Status Pembayaran: ${service.payment_status || 'Belum bayar'}`, 130, afterY);
+  afterY += 6;
+  if (!isPaid) {
+    doc.text(`Sisa Tagihan: ${formatRupiah(remaining || total)}`, 130, afterY);
+    afterY += 6;
+  } else {
+    doc.text('Status: LUNAS', 130, afterY);
+    afterY += 6;
+  }
 
   doc.setFontSize(9);
-  doc.text('Terima kasih atas kepercayaan Anda.', 14, afterY);
+  doc.text(isPaid ? 'Terima kasih. Pembayaran telah kami terima.' : 'Mohon lakukan pembayaran sesuai tagihan.', 14, afterY);
   doc.text('Khawarizmi.project', 14, afterY + 5);
-
   return doc;
 };
 
