@@ -9,7 +9,7 @@ import { ROLE_LABELS } from '../lib/constants';
 import { useEffect, useState } from 'react';
 
 const navItems = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true, group: 'Ringkasan' },
+  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, end: true, group: 'Ringkasan' },
   { to: '/service', label: 'Service', icon: Wrench, group: 'Operasional' },
   { to: '/software', label: 'Software Development', icon: Code2, group: 'Operasional' },
   { to: '/sparepart', label: 'Sparepart', icon: Cpu, group: 'Operasional' },
@@ -33,7 +33,7 @@ export default function AppLayout({ children }) {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate('/login');
+    navigate('/');
   };
 
   const Navigation = ({ mobile = false }) => {
@@ -47,7 +47,7 @@ export default function AppLayout({ children }) {
           return (
             <div key={item.to}>
               {showGroup && (
-                <p className={`px-3 ${item.to === '/' ? 'mb-2' : 'mt-6 mb-2'} text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400`}>
+                <p className={`px-3 ${item.to === '/dashboard' ? 'mb-2' : 'mt-6 mb-2'} text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400`}>
                   {item.group}
                 </p>
               )}
