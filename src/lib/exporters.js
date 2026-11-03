@@ -2,28 +2,39 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import { formatRupiah, formatDate } from './format';
+import brandLogo from '../assets/1000022671.png?inline';
 
 const BRAND = 'Khawarizmi.project';
 const BRAND_SUB = 'Sistem Management Teknisi & Software Developer';
 
 const headerBox = (doc, title, subtitle) => {
-  doc.setFillColor(28, 107, 245);
-  doc.rect(0, 0, doc.internal.pageSize.getWidth(), 28, 'F');
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(16);
+  const blue = [15, 61, 122];
+  doc.addImage(brandLogo, 'PNG', 14, 8, 21, 21);
+  doc.setTextColor(...blue);
   doc.setFont('helvetica', 'bold');
-  doc.text(BRAND, 14, 12);
-  doc.setFontSize(9);
+  doc.setFontSize(17);
+  doc.text('KHAWARIZMI', 40, 16);
+  doc.setFontSize(10);
+  doc.text('PROJECT', 40, 22);
   doc.setFont('helvetica', 'normal');
-  doc.text(BRAND_SUB, 14, 19);
-  doc.setFontSize(13);
+  doc.setFontSize(8);
+  doc.setTextColor(100, 116, 139);
+  doc.text('IT Service  |  Software Development  |  IoT Development', 40, 29);
+  doc.text('Dumai, Riau  |  +62 822 5152 4351', 40, 35);
+  doc.setTextColor(...blue);
   doc.setFont('helvetica', 'bold');
-  doc.text(title, 14, 40);
+  doc.setFontSize(15);
+  doc.text(title, 196, 16, { align: 'right', maxWidth: 85 });
   if (subtitle) {
-    doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
-    doc.text(subtitle, 14, 46);
+    doc.setFontSize(8);
+    doc.text(subtitle, 196, 25, { align: 'right', maxWidth: 85 });
   }
+  doc.setDrawColor(...blue);
+  doc.setLineWidth(0.8);
+  doc.line(14, 44, 196, 44);
+  doc.setLineWidth(0.25);
+  doc.line(14, 45.5, 196, 45.5);
   doc.setTextColor(30, 30, 30);
 };
 
@@ -47,17 +58,18 @@ const terbilang = (value) => {
 
 const drawDocumentHeader = (doc, title, number) => {
   const blue = [15, 61, 122];
+  doc.addImage(brandLogo, 'PNG', 14, 8, 21, 21);
   doc.setTextColor(...blue);
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(19);
-  doc.text('KHAWARIZMI', 14, 18);
+  doc.setFontSize(17);
+  doc.text('KHAWARIZMI', 40, 16);
   doc.setFontSize(10);
-  doc.text('PROJECT', 14, 24);
+  doc.text('PROJECT', 40, 22);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8);
   doc.setTextColor(100, 116, 139);
-  doc.text('IT Service  |  Software Development  |  IoT Development', 14, 32);
-  doc.text('Dumai, Riau  |  +62 822 5152 4351', 14, 38);
+  doc.text('IT Service  |  Software Development  |  IoT Development', 40, 29);
+  doc.text('Dumai, Riau  |  +62 822 5152 4351', 40, 35);
   doc.setTextColor(...blue);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(19);
