@@ -104,7 +104,7 @@ RETURNS trigger
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
-AS $
+AS $$
 DECLARE
   v_status text;
 BEGIN
@@ -123,7 +123,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$;
+$$;
 
 DROP TRIGGER IF EXISTS trg_supplier_purchase_item_stock ON supplier_purchase_items;
 CREATE TRIGGER trg_supplier_purchase_item_stock
