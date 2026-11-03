@@ -16,14 +16,14 @@ import { LoadingState } from './components/States';
 function ProtectedRoute({ children }) {
   const { session, loading } = useAuth();
   if (loading) return <LoadingState />;
-  if (!session) return <Navigate to="/login" replace />;
+  if (!session) return <Navigate to="/" replace />;
   return <AppLayout>{children}</AppLayout>;
 }
 
 function PublicRoute({ children }) {
   const { session, loading } = useAuth();
   if (loading) return <LoadingState />;
-  if (session) return <Navigate to="/" replace />;
+  if (session) return <Navigate to="/dashboard" replace />;
   return children;
 }
 
@@ -34,8 +34,8 @@ export default function App() {
         <ToastProvider>
           <BrowserRouter>
             <Routes>
-              <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
-              <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+              <Route path="/" element={<PublicRoute><LoginPage /></PublicRoute>} />
+              <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
               <Route path="/service" element={<ProtectedRoute><ServicePage /></ProtectedRoute>} />
               <Route path="/software" element={<ProtectedRoute><SoftwarePage /></ProtectedRoute>} />
               <Route path="/sparepart" element={<ProtectedRoute><SparepartPage /></ProtectedRoute>} />
