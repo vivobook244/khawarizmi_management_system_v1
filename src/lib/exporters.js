@@ -386,8 +386,10 @@ const downloadDoc = (doc, filename) => {
   doc.save(filename);
 };
 
-export const downloadServiceInvoice = (service, spareparts) => {
-  downloadDoc(exportInvoiceService(service, spareparts), `Invoice-${service.invoice_number || service.id}.pdf`);
+export const downloadServiceInvoice = (service, spareparts, payments = []) => {
+  const isPaid = String(service.payment_status || '').toLowerCase() === 'lunas';
+  const prefix = isPaid ? 'Kuitansi' : 'Invoice';
+  downloadDoc(exportInvoiceService(service, spareparts, payments), `${prefix}-${service.invoice_number || service.id}.pdf`);
 };
 
 export const downloadProjectInvoice = (project, rabItems) => {
