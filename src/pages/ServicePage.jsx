@@ -87,6 +87,20 @@ export default function ServicePage() {
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
 
+  const refreshService = async (serviceId) => {
+    const { data, error } = await supabase
+      .from('services')
+      .select('*')
+      .eq('id', serviceId)
+      .single();
+    if (error) {
+      toast.error('Gagal memperbarui data service: ' + error.message);
+      return;
+    }
+    setServices((current) => current.map((service) => service.id === serviceId ? data : service));
+    setViewing((current) => current?.id === serviceId ? data : current);
+  };
+
   const openAdd = () => { setEditing(null); setFormOpen(true); };
   const openEdit = (s) => { setEditing(s); setFormOpen(true); };
 
@@ -295,6 +309,7 @@ export default function ServicePage() {
       {viewing && (
         <ServiceViewModal
           service={viewing}
+          onPaymentsChanged={() => refreshService(viewing.id)}
           spareparts={viewSpareparts}
           onClose={() => setViewing(null)}
           onPrint={() => printInvoice(viewing)}
@@ -568,7 +583,7 @@ function ServiceForm({ open, onClose, editing, spareparts, onSaved }) {
 }
 
 // ---------- Service View ----------
-function ServiceViewModal({ service, spareparts, onClose, onPrint, onDownload, canEdit }) {
+function ServiceViewModal({ service, spareparts, onClose, onPrint, onDownload, onPaymentsChanged, canEdit }) {
   const sparepartsTotal = spareparts.reduce((a, s) => a + (Number(s.subtotal) || 0), 0);
   const total = Number(service.estimated_total) || (Number(service.service_fee) || 0) + sparepartsTotal;
 
@@ -636,7 +651,7 @@ function ServiceViewModal({ service, spareparts, onClose, onPrint, onDownload, c
         <div className="flex justify-between text-sm"><span className="text-slate-500">Biaya Jasa</span><span className="font-medium">{formatRupiah(service.service_fee)}</span></div>
         <div className="flex justify-between text-base font-bold text-slate-900 dark:text-white pt-1"><span>Total</span><span>{formatRupiah(total)}</span></div>
       </div>
-      <PaymentHistory sourceType="service" sourceId={service.id} customerName={service.customer_name} totalAmount={total} canEdit={canEdit} />
+      <PaymentHistory sourceType="service" sourceId={service.id} customerName={service.customer_name} totalAmount={total} canEdit={canEdit} onPaymentsChanged={onPaymentsChanged} />
     </Modal>
   );
 }
