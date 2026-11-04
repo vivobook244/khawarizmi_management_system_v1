@@ -7,7 +7,7 @@ import { Plus, Trash2 } from 'lucide-react';
 
 const PAYMENT_METHODS = ['Transfer', 'Tunai', 'QRIS', 'E-Wallet', 'Lainnya'];
 
-export default function PaymentHistory({ sourceType, sourceId, customerName, totalAmount, canEdit = false }) {
+export default function PaymentHistory({ sourceType, sourceId, customerName, totalAmount, canEdit = false, onPaymentsChanged }) {
   const toast = useToast();
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -67,6 +67,7 @@ export default function PaymentHistory({ sourceType, sourceId, customerName, tot
       setAmount(0);
       setNotes('');
       await load();
+      onPaymentsChanged?.();
     } catch (err) {
       toast.error('Gagal mencatat pembayaran: ' + err.message);
     } finally {
@@ -81,6 +82,7 @@ export default function PaymentHistory({ sourceType, sourceId, customerName, tot
       if (error) throw error;
       toast.success('Pembayaran dihapus dan kas diperbarui');
       await load();
+      onPaymentsChanged?.();
     } catch (err) {
       toast.error('Gagal menghapus pembayaran: ' + err.message);
     }
